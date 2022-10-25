@@ -64,7 +64,6 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, 
 }
 
 func InitScreen() tcell.Screen {
-
 	// init screen
 	s, err := tcell.NewScreen()
 	if err != nil {
@@ -79,6 +78,7 @@ func InitScreen() tcell.Screen {
 
 func Setup(s tcell.Screen) {
 	fmt.Println("porumai ... setting up screen ?")
+	bgStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
 	// default style
 	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 	// box style
@@ -95,7 +95,7 @@ func Setup(s tcell.Screen) {
 	boxStyle.Bold(true)
 	drawBox(s, startX, startY, width, height, boxStyle, "PORUMAI")
 	boxStyle.Bold(false)
-	drawBox(s, startX, height+startY, width, 2*height+startY, boxStyle, "H E L L O")
+	drawBox(s, startX, height+startY, width, 2*height+startY, bgStyle, "H E L L O")
 }
 
 func Listen(s tcell.Screen) {
