@@ -12,7 +12,6 @@ import (
 
 var sizeX = 6
 var sizeY = 2
-var grids = 5
 
 // ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
 func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
@@ -99,7 +98,7 @@ func drawBG(s tcell.Screen) {
 
 func drawGrid(s tcell.Screen) {
 	for row := 0; row < guess.TotalTries; row++ {
-		for col := 0; col < grids; col++ {
+		for col := 0; col < guess.WordLength; col++ {
 			drawGridLetter(s, row, col, "")
 		}
 	}
@@ -143,11 +142,6 @@ func Render(s tcell.Screen) {
 	drawGrid(s)
 	// populate guesses
 	populateGuess(s)
-	// let us try to print current wordle
-	for col, r := range guess.Wordle {
-		letter := strings.ToUpper(string(r))
-		drawGridLetter(s, 0, col, letter)
-	}
 }
 
 func Listen(s tcell.Screen) {
@@ -180,7 +174,26 @@ func Listen(s tcell.Screen) {
 				s.Sync()
 			} else {
 				mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
-				fmt.Sprintf("EventKey Modifiers: %d Key: %d Rune: %d", mod, key, ch)
+				// handle enter key
+				if key == tcell.KeyEnter {
+					fmt.Printf("Enter")
+
+					break
+				}
+
+				// backspace/delete
+				if key == tcell.KeyDelete || key == tcell.KeyBackspace || key == 127 {
+					fmt.Printf("Clear")
+
+					break
+				}
+
+				// 65 - 122; valid letters range
+				if mod == 0 && ch >= 65 && ch <= 122 {
+					// we have a valid character
+					letter := strings.ToUpper(string(ch))
+					fmt.Printf("%s", letter)
+				}
 			}
 
 		}
