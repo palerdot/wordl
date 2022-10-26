@@ -10,6 +10,7 @@ import (
 
 var sizeX = 6
 var sizeY = 2
+var grids = 6
 
 // ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
 func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
@@ -97,18 +98,18 @@ func drawGrid(s tcell.Screen) {
 	// box style
 	boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 
-	grids := 6
-
 	startX := 15
-	startY := 2
-	space := 2
+	startY := 5
+	space := 1
 
-	for col := 0; col < grids; col++ {
-		x1 := startX + (col * sizeX) + (space * col)
-		y1 := startY
-		x2 := x1 + sizeX
-		y2 := y1 + sizeY
-		drawBox(s, x1, y1, x2, y2, boxStyle, "X")
+	for row := 0; row < grids; row++ {
+		for col := 0; col < grids; col++ {
+			x1 := startX + (col * sizeX) + (space * col)
+			y1 := startY + (row * sizeY) + (space * row) - sizeY
+			x2 := x1 + sizeX
+			y2 := y1 + sizeY
+			drawBox(s, x1, y1, x2, y2, boxStyle, "X")
+		}
 	}
 
 }
