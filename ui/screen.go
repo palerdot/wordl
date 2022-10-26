@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/palerdot/wordl/guess"
 )
 
 var sizeX = 6
 var sizeY = 2
-var grids = 6
+var grids = 5
 
 // ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
 func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
@@ -30,7 +32,7 @@ func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style,
 	}
 }
 
-func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
+func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style, letterStyle tcell.Style, text string) {
 	// fix improper dimensions
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -42,33 +44,33 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, 
 	// fill background
 	for row := y1; row <= y2; row++ {
 		for col := x1; col <= x2; col++ {
-			s.SetContent(col, row, ' ', nil, style)
+			s.SetContent(col, row, ' ', nil, boxStyle)
 		}
 	}
 
 	// draw borders
 	for col := x1; col <= x2; col++ {
-		s.SetContent(col, y1, tcell.RuneHLine, nil, style)
-		s.SetContent(col, y2, tcell.RuneHLine, nil, style)
+		s.SetContent(col, y1, tcell.RuneHLine, nil, boxStyle)
+		s.SetContent(col, y2, tcell.RuneHLine, nil, boxStyle)
 	}
 	for row := y1 + 1; row < y2; row++ {
-		s.SetContent(x1, row, tcell.RuneVLine, nil, style)
-		s.SetContent(x2, row, tcell.RuneVLine, nil, style)
+		s.SetContent(x1, row, tcell.RuneVLine, nil, boxStyle)
+		s.SetContent(x2, row, tcell.RuneVLine, nil, boxStyle)
 	}
 
 	// draw rounded corners if necessary
 	if y1 != y2 && x1 != x2 {
-		s.SetContent(x1, y1, tcell.RuneULCorner, nil, style)
-		s.SetContent(x2, y1, tcell.RuneURCorner, nil, style)
-		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, style)
-		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
+		s.SetContent(x1, y1, tcell.RuneULCorner, nil, boxStyle)
+		s.SetContent(x2, y1, tcell.RuneURCorner, nil, boxStyle)
+		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, boxStyle)
+		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, boxStyle)
 	}
 
 	xDiff := sizeX / 2
 	yDiff := sizeY / 2
 
-	style.Bold(true)
-	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, style, text)
+	letterStyle.Bold(true)
+	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, letterStyle, text)
 }
 
 func InitScreen() tcell.Screen {
@@ -96,26 +98,39 @@ func drawBG(s tcell.Screen) {
 }
 
 func drawGrid(s tcell.Screen) {
+	for row := 0; row < guess.TotalTries; row++ {
+		for col := 0; col < grids; col++ {
+			drawGridLetter(s, row, col, "")
+		}
+	}
+}
+
+func drawGridLetter(s tcell.Screen, row int, col int, letter string) {
 	// box style
-	boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+	boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
+	letterStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 
 	startX := 15
 	startY := 5
 	space := 1
 
-	for row := 0; row < grids; row++ {
-		for col := 0; col < grids; col++ {
-			x1 := startX + (col * sizeX) + (space * col)
-			y1 := startY + (row * sizeY) + (space * row) - 3
-			x2 := x1 + sizeX
-			y2 := y1 + sizeY
-			drawBox(s, x1, y1, x2, y2, boxStyle, "X")
-		}
-	}
-
+	x1 := startX + (col * sizeX) + (space * col)
+	y1 := startY + (row * sizeY) + (space * row) - 3
+	x2 := x1 + sizeX
+	y2 := y1 + sizeY
+	drawBox(s, x1, y1, x2, y2, boxStyle, letterStyle, letter)
 }
 
-func Setup(s tcell.Screen) {
+func populateGuess(s tcell.Screen) {
+	for row, guess := range guess.Tries {
+		for col, r := range guess {
+			letter := strings.ToUpper(string(r))
+			drawGridLetter(s, row, col, letter)
+		}
+	}
+}
+
+func Render(s tcell.Screen) {
 	// default style
 	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 	// set default style
@@ -126,6 +141,13 @@ func Setup(s tcell.Screen) {
 	drawBG(s)
 	// draw grid
 	drawGrid(s)
+	// populate guesses
+	populateGuess(s)
+	// let us try to print current wordle
+	for col, r := range guess.Wordle {
+		letter := strings.ToUpper(string(r))
+		drawGridLetter(s, 0, col, letter)
+	}
 }
 
 func Listen(s tcell.Screen) {
@@ -141,7 +163,6 @@ func Listen(s tcell.Screen) {
 	for {
 		// update screen
 		s.Show()
-
 		// poll for event
 		ev := s.PollEvent()
 
@@ -157,8 +178,6 @@ func Listen(s tcell.Screen) {
 				os.Exit(0)
 			} else if ev.Key() == tcell.KeyCtrlL {
 				s.Sync()
-			} else if ev.Rune() == 'C' || ev.Rune() == 'c' {
-				// s.Clear()
 			} else {
 				mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
 				fmt.Sprintf("EventKey Modifiers: %d Key: %d Rune: %d", mod, key, ch)

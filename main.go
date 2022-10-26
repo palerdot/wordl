@@ -24,6 +24,6 @@ func main() {
 
 	defer quit()
 
-	ui.Setup(s)
+	ui.Render(s)
 	ui.Listen(s)
 }
