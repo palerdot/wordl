@@ -67,6 +67,7 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, 
 	xDiff := sizeX / 2
 	yDiff := sizeY / 2
 
+	style.Bold(true)
 	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, style, text)
 }
 
@@ -105,7 +106,7 @@ func drawGrid(s tcell.Screen) {
 	for row := 0; row < grids; row++ {
 		for col := 0; col < grids; col++ {
 			x1 := startX + (col * sizeX) + (space * col)
-			y1 := startY + (row * sizeY) + (space * row) - sizeY
+			y1 := startY + (row * sizeY) + (space * row) - 3
 			x2 := x1 + sizeX
 			y2 := y1 + sizeY
 			drawBox(s, x1, y1, x2, y2, boxStyle, "X")
@@ -115,12 +116,8 @@ func drawGrid(s tcell.Screen) {
 }
 
 func Setup(s tcell.Screen) {
-	fmt.Println("porumai ... setting up screen ?")
-	// bgStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
 	// default style
 	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
-	// box style
-	// boxStyle := tcell.StyleDefault.Background(tcell.ColorTeal).Foreground(tcell.ColorWhite)
 	// set default style
 	s.SetStyle(defaultStyle)
 	// clear the screen
@@ -129,19 +126,9 @@ func Setup(s tcell.Screen) {
 	drawBG(s)
 	// draw grid
 	drawGrid(s)
-	// draw initial boxes
-	// startX := 15
-	// startY := 2
-	// width := 50
-	// height := 5
-	// boxStyle.Bold(true)
-	// drawBox(s, startX, startY, width, height, boxStyle, "PORUMAI")
-	// boxStyle.Bold(false)
-	// drawBox(s, startX, height+startY, width, 2*height+startY, bgStyle, "H E L L O")
 }
 
 func Listen(s tcell.Screen) {
-	fmt.Println("porumai ... listening screen ?")
 	// Here's how to get the screen size when you need it.
 	// xmax, ymax := s.Size()
 
