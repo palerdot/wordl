@@ -8,6 +8,9 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
+var sizeX = 6
+var sizeY = 2
+
 // ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
 func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
 	row := y1
@@ -60,7 +63,10 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, 
 		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
 	}
 
-	drawText(s, x1+1, y1+1, x2-1, y2-1, style, text)
+	xDiff := sizeX / 2
+	yDiff := sizeY / 2
+
+	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, style, text)
 }
 
 func InitScreen() tcell.Screen {
@@ -76,26 +82,61 @@ func InitScreen() tcell.Screen {
 	return s
 }
 
+func drawBG(s tcell.Screen) {
+	bgStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+	xmax, ymax := s.Size()
+	// fill background
+	for row := 0; row <= ymax; row++ {
+		for col := 0; col <= xmax; col++ {
+			s.SetContent(col, row, ' ', nil, bgStyle)
+		}
+	}
+}
+
+func drawGrid(s tcell.Screen) {
+	// box style
+	boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+
+	grids := 1
+
+	startX := 15
+	startY := 2
+	// space := 1
+
+	for grid := 0; grid < grids; grid++ {
+		x1 := startX + grid
+		y1 := startY + grid
+		x2 := x1 + sizeX
+		y2 := y1 + sizeY
+		drawBox(s, x1, y1, x2, y2, boxStyle, "X")
+	}
+
+}
+
 func Setup(s tcell.Screen) {
 	fmt.Println("porumai ... setting up screen ?")
-	bgStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
+	// bgStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
 	// default style
 	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 	// box style
-	boxStyle := tcell.StyleDefault.Background(tcell.ColorTeal).Foreground(tcell.ColorWhite)
+	// boxStyle := tcell.StyleDefault.Background(tcell.ColorTeal).Foreground(tcell.ColorWhite)
 	// set default style
 	s.SetStyle(defaultStyle)
 	// clear the screen
 	s.Clear()
+	// draw bg
+	drawBG(s)
+	// draw grid
+	drawGrid(s)
 	// draw initial boxes
-	startX := 15
-	startY := 2
-	width := 50
-	height := 5
-	boxStyle.Bold(true)
-	drawBox(s, startX, startY, width, height, boxStyle, "PORUMAI")
-	boxStyle.Bold(false)
-	drawBox(s, startX, height+startY, width, 2*height+startY, bgStyle, "H E L L O")
+	// startX := 15
+	// startY := 2
+	// width := 50
+	// height := 5
+	// boxStyle.Bold(true)
+	// drawBox(s, startX, startY, width, height, boxStyle, "PORUMAI")
+	// boxStyle.Bold(false)
+	// drawBox(s, startX, height+startY, width, 2*height+startY, bgStyle, "H E L L O")
 }
 
 func Listen(s tcell.Screen) {
