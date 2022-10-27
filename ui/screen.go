@@ -99,14 +99,17 @@ func drawBG(s tcell.Screen) {
 }
 
 func drawGrid(s tcell.Screen) {
+	// for now default blank style
+	style := GetLetterStyles(guess.LetterPositionBlank)
+
 	for row := 0; row < guess.TotalTries; row++ {
 		for col := 0; col < guess.WordLength; col++ {
-			drawGridLetter(s, row, col, "")
+			drawGridLetter(s, row, col, style, "")
 		}
 	}
 }
 
-func drawGridLetter(s tcell.Screen, row int, col int, letter string) {
+func drawGridLetter(s tcell.Screen, row int, col int, style PositionStyle, letter string) {
 	space := 1
 	xmax, _ := s.Size()
 	totalWidth := guess.WordLength*sizeX + ((guess.WordLength - 1) * space)
@@ -119,16 +122,17 @@ func drawGridLetter(s tcell.Screen, row int, col int, letter string) {
 	x2 := x1 + sizeX
 	y2 := y1 + sizeY
 
-	style := GetLetterStyles(guess.LetterPositionBlank)
-
 	drawBox(s, x1, y1, x2, y2, style, letter)
 }
 
 func populateGuess(s tcell.Screen) {
+	// for now default blank style
+	style := GetLetterStyles(guess.LetterPositionBlank)
+
 	for row, guess := range guess.Tries {
 		for col, r := range guess {
 			letter := strings.ToUpper(string(r))
-			drawGridLetter(s, row, col, letter)
+			drawGridLetter(s, row, col, style, letter)
 		}
 	}
 }
