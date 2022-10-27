@@ -1,6 +1,7 @@
 package guess
 
 import (
+	"errors"
 	"math/rand"
 	"os"
 	"strings"
@@ -70,3 +71,24 @@ const (
 	// neutral state; we have not yet calculated letter position
 	LetterPositionBlank LetterPosition = "blank"
 )
+
+// handle incoming letter
+// if the current word is not complete, append the letter
+// and notify the ui that ui has to be updated
+// if the current word is full, just ignore the incoming letters
+func HandleLetter(letter rune) (row int, col int, err error) {
+	// check if current word is full
+	var currentWord = Tries[ActiveIndex]
+	var isFull bool = len(currentWord) == WordLength
+
+	// if full ignore letters
+	if isFull {
+		return row, col, errors.New("word already full")
+	}
+	// append the letter to the word
+	currentWord = currentWord + string(letter)
+	// update the original Tries
+	Tries[ActiveIndex] = currentWord
+
+	return ActiveIndex, len(currentWord) - 1, nil
+}

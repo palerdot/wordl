@@ -199,8 +199,13 @@ func Listen(s tcell.Screen) {
 				// 65 - 122; valid letters range
 				if mod == 0 && ch >= 65 && ch <= 122 {
 					// we have a valid character
-					letter := strings.ToUpper(string(ch))
-					fmt.Printf("%s", letter)
+					row, col, err := guess.HandleLetter(ch)
+					// if no error populate letter
+					if err == nil {
+						// populate letter
+						style := GetLetterStyles(guess.LetterPositionBlank)
+						drawGridLetter(s, row, col, style, strings.ToUpper(string(ch)))
+					}
 				}
 			}
 
