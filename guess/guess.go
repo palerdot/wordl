@@ -137,6 +137,25 @@ func Calculate() (err error) {
 	}
 }
 
+// clear word on backspace
+// return row, col to clear the letter
+// error if letter is not be cleared
+func ClearLetter() (row int, col int, err error) {
+	// check if current word is full
+	var currentWord = Tries[ActiveIndex]
+	var isEmpty bool = len(currentWord) == 0
+
+	if isEmpty {
+		return row, col, errors.New("word already empty")
+	}
+
+	// clear the letter
+	var position int = len(currentWord) - 1
+	Tries[ActiveIndex] = currentWord[0:position]
+
+	return ActiveIndex, position, nil
+}
+
 // find if word is a valid guess
 func isValidGuess(currentGuess string) bool {
 	for _, word := range ValidList {

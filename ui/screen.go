@@ -205,7 +205,12 @@ func Listen(s tcell.Screen) {
 
 				// backspace/delete
 				if key == tcell.KeyDelete || key == tcell.KeyBackspace || key == 127 {
-					fmt.Printf("Clear")
+					row, col, err := guess.ClearLetter()
+					// if no error clear the letter
+					if err == nil {
+						style := GetLetterStyles(guess.LetterPositionBlank)
+						drawGridLetter(s, row, col, style, " ")
+					}
 
 					break
 				}
