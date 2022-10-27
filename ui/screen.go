@@ -129,8 +129,16 @@ func populateGuess(s tcell.Screen) {
 	// for now default blank style
 	style := GetLetterStyles(guess.LetterPositionBlank)
 
-	for row, guess := range guess.Tries {
-		for col, r := range guess {
+	for row, word := range guess.Tries {
+		if row >= guess.TotalTries {
+			break
+		}
+
+		if len(word) != guess.WordLength {
+			return
+		}
+
+		for col, r := range word {
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
 		}
@@ -184,7 +192,13 @@ func Listen(s tcell.Screen) {
 				mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
 				// handle enter key
 				if key == tcell.KeyEnter {
-					fmt.Printf("Enter")
+					err := guess.Calculate()
+					// if no error re-render
+					if err != nil {
+						fmt.Printf("not full")
+					} else {
+						Render(s)
+					}
 
 					break
 				}

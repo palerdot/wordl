@@ -27,7 +27,7 @@ var IsSuccess bool = false
 var Wordle string = getWordle()
 
 // valid guess list
-var ValidList = getValidGuessList()
+var ValidList []string = getValidGuessList()
 
 // tried guesses
 // var Tries = [6]string{"Hello", "Light", "Scout", "Aimer", "Foggy", "Clear"}
@@ -54,6 +54,9 @@ func getWordle() string {
 	var splitted = strings.Split(string(data), "\n")
 	var randomIndex = rand.Intn(len(splitted))
 	var word string = splitted[randomIndex]
+
+	// we are going to insert the valid answers as part of valid list
+	ValidList = append(ValidList, splitted...)
 
 	return word
 }
@@ -91,4 +94,56 @@ func HandleLetter(letter rune) (row int, col int, err error) {
 	Tries[ActiveIndex] = currentWord
 
 	return ActiveIndex, len(currentWord) - 1, nil
+}
+
+// calculate word on hitting enter
+// 1. Enter is hit before word is complete
+// 2. Enter is hit after word is complete
+func Calculate() (err error) {
+	// check if current word is full
+	var currentWord = Tries[ActiveIndex]
+	var isFull bool = len(currentWord) == WordLength
+
+	if !isFull {
+		return errors.New("word not yet full")
+	}
+
+	// we have a full word
+	// there are 2 cases;
+	// 1 - valid guess word (proceed to color the word)
+	// 2 - invalid guess word (clear current word)
+
+	// CASE 1: valid guess word
+	// 1a: word is the Wordle
+	if currentWord == Wordle {
+		// mark complete
+		IsOver = true
+		IsSuccess = true
+
+		return nil
+	}
+
+	// 1b: word is valid guess but not wordle
+	if isValidGuess(currentWord) {
+		// shift to next word
+		ActiveIndex = ActiveIndex + 1
+
+		return nil
+	} else {
+		// clear the current word
+		Tries[ActiveIndex] = ""
+
+		return nil
+	}
+}
+
+// find if word is a valid guess
+func isValidGuess(currentGuess string) bool {
+	for _, word := range ValidList {
+		if strings.EqualFold(word, currentGuess) {
+			return true
+		}
+	}
+
+	return false
 }
