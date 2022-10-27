@@ -31,7 +31,9 @@ func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style,
 	}
 }
 
-func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style, letterStyle tcell.Style, text string) {
+func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle, text string) {
+	boxStyle := style.box
+	letterStyle := style.letter
 	// fix improper dimensions
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -105,19 +107,21 @@ func drawGrid(s tcell.Screen) {
 }
 
 func drawGridLetter(s tcell.Screen, row int, col int, letter string) {
-	// box style
-	boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
-	letterStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
-
-	startX := 15
-	startY := 5
 	space := 1
+	xmax, _ := s.Size()
+	totalWidth := guess.WordLength*sizeX + ((guess.WordLength - 1) * space)
+	// startX := 15
+	startX := (xmax - totalWidth) / 2
+	startY := 5
 
 	x1 := startX + (col * sizeX) + (space * col)
 	y1 := startY + (row * sizeY) + (space * row) - 3
 	x2 := x1 + sizeX
 	y2 := y1 + sizeY
-	drawBox(s, x1, y1, x2, y2, boxStyle, letterStyle, letter)
+
+	style := GetLetterStyles(guess.LetterPositionBlank)
+
+	drawBox(s, x1, y1, x2, y2, style, letter)
 }
 
 func populateGuess(s tcell.Screen) {

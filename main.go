@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/palerdot/wordl/ui"
 )
 
 func main() {
 	ui.Greet()
-	fmt.Println("porumai ... wordle game")
 
 	s := ui.InitScreen()
 

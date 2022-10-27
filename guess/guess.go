@@ -56,3 +56,17 @@ func getWordle() string {
 
 	return word
 }
+
+// letter position related stuffs
+type LetterPosition string
+
+const (
+	// letter is in correct position
+	LetterPositionCorrect LetterPosition = "correct"
+	// letter is NOT in correct position
+	LetterPositionInCorrect LetterPosition = "incorrect"
+	// letter is not in word
+	LetterPositionMissing LetterPosition = "missing"
+	// neutral state; we have not yet calculated letter position
+	LetterPositionBlank LetterPosition = "blank"
+)
