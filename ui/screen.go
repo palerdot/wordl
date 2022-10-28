@@ -169,7 +169,7 @@ func displayStatus(s tcell.Screen) {
 			// CASE 2: game is over: user didn't guess right
 			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 			status = fmt.Sprintf("  Wordle: %s ", strings.ToUpper(guess.Wordle))
-			padding = 1*sizeX + 2
+			padding = 1*sizeX + 4
 		}
 	} else {
 		style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
