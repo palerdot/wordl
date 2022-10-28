@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/gdamore/tcell/v2/encoding"
 	"github.com/palerdot/wordl/ui"
 )
 
 func main() {
+	encoding.Register()
 	ui.Greet()
 
 	s := ui.InitScreen()

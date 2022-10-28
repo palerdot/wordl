@@ -10,8 +10,8 @@ import (
 	"github.com/palerdot/wordl/guess"
 )
 
-var sizeX = 6
-var sizeY = 2
+var sizeX = 8
+var sizeY = 4
 
 // ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
 func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
@@ -31,29 +31,14 @@ func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style,
 	}
 }
 
-func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle, text string) {
-	boxStyle := style.box
-	letterStyle := style.letter
-	// fix improper dimensions
-	if y2 < y1 {
-		y1, y2 = y2, y1
-	}
-	if x2 < x1 {
-		x1, x2 = x2, x1
-	}
-
-	// fill background
-	for row := y1; row <= y2; row++ {
-		for col := x1; col <= x2; col++ {
-			s.SetContent(col, row, ' ', nil, boxStyle)
-		}
-	}
-
+// helper function to draw border
+func drawBorder(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style) {
 	// draw borders
-	for col := x1; col <= x2; col++ {
+	for col := x1 + 1; col < x2; col++ {
 		s.SetContent(col, y1, tcell.RuneHLine, nil, boxStyle)
 		s.SetContent(col, y2, tcell.RuneHLine, nil, boxStyle)
 	}
+
 	for row := y1 + 1; row < y2; row++ {
 		s.SetContent(x1, row, tcell.RuneVLine, nil, boxStyle)
 		s.SetContent(x2, row, tcell.RuneVLine, nil, boxStyle)
@@ -65,6 +50,42 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle
 		s.SetContent(x2, y1, tcell.RuneURCorner, nil, boxStyle)
 		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, boxStyle)
 		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, boxStyle)
+	}
+}
+
+// fill square with borders
+func fillSquare(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style) {
+	// we are going to repeatedly draw borders to the square
+	// moving along x axis and drawing Vertical borders
+	for col := 0; col <= sizeX; col++ {
+		for row := y1 + 1; row < y2; row++ {
+			s.SetContent(x1+col, row, tcell.RuneVLine, nil, boxStyle)
+			s.SetContent(x2-col, row, tcell.RuneVLine, nil, boxStyle)
+		}
+	}
+}
+
+func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle, text string) {
+	boxStyle := style.box
+	letterStyle := style.letter
+	hasBorder := style.hasBorder
+	// fix improper dimensions
+	if y2 < y1 {
+		y1, y2 = y2, y1
+	}
+	if x2 < x1 {
+		x1, x2 = x2, x1
+	}
+
+	// fill background
+	for row := y1 + 1; row < y2; row++ {
+		for col := x1 + 1; col < x2; col++ {
+			s.SetContent(col, row, ' ', nil, boxStyle)
+		}
+	}
+
+	if hasBorder {
+		// drawBorder(s, x1, y1, x2, y2, boxStyle)
 	}
 
 	xDiff := sizeX / 2
@@ -110,15 +131,16 @@ func drawGrid(s tcell.Screen) {
 }
 
 func drawGridLetter(s tcell.Screen, row int, col int, style PositionStyle, letter string) {
-	space := 1
+	space := 0
 	xmax, _ := s.Size()
 	totalWidth := guess.WordLength*sizeX + ((guess.WordLength - 1) * space)
 	// startX := 15
 	startX := (xmax - totalWidth) / 2
 	startY := 5
 
+	// 48,2 54,4
 	x1 := startX + (col * sizeX) + (space * col)
-	y1 := startY + (row * sizeY) + (space * row) - 3
+	y1 := startY + (row * sizeY) + (space * row) - 4
 	x2 := x1 + sizeX
 	y2 := y1 + sizeY
 
@@ -126,9 +148,6 @@ func drawGridLetter(s tcell.Screen, row int, col int, style PositionStyle, lette
 }
 
 func populateGuess(s tcell.Screen) {
-	// for now default blank style
-	style := GetLetterStyles(guess.LetterPositionBlank)
-
 	for row, word := range guess.Tries {
 		if row >= guess.TotalTries {
 			break
@@ -139,10 +158,24 @@ func populateGuess(s tcell.Screen) {
 		}
 
 		for col, r := range word {
+			style := ColorLetter(col, string(r))
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
+
 		}
 	}
+}
+
+func displayStatus(s tcell.Screen) {
+	defaultStyle := tcell.StyleDefault.Background(tcell.ColorTeal).Foreground(tcell.ColorWhite)
+	xmax, _ := s.Size()
+	totalWidth := guess.WordLength * sizeX
+	gridHeight := guess.TotalTries*sizeY + 2
+	startX := (xmax - totalWidth) / 2
+
+	var status string = fmt.Sprintf("  Wordle: %s  ", guess.Wordle)
+
+	drawText(s, startX, gridHeight, startX+totalWidth, 55, defaultStyle, status)
 }
 
 func Render(s tcell.Screen) {
@@ -158,6 +191,8 @@ func Render(s tcell.Screen) {
 	drawGrid(s)
 	// populate guesses
 	populateGuess(s)
+	// display status
+	displayStatus(s)
 }
 
 func Listen(s tcell.Screen) {
@@ -194,9 +229,7 @@ func Listen(s tcell.Screen) {
 				if key == tcell.KeyEnter {
 					err := guess.Calculate()
 					// if no error re-render
-					if err != nil {
-						fmt.Printf("not full")
-					} else {
+					if err == nil {
 						Render(s)
 					}
 

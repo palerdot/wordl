@@ -75,6 +75,30 @@ const (
 	LetterPositionBlank LetterPosition = "blank"
 )
 
+// helper function to calculate color letter
+// takes in index and letter
+// we will compare the letter at specified index of the wordle
+// returns LetterPosition
+func FindLetterPosition(index int, letter string) (pos LetterPosition) {
+	if index >= WordLength {
+		return LetterPositionBlank
+	}
+
+	var wordleLetter string = string(Wordle[index])
+	// CASE 1: letter is in correct position
+	if strings.EqualFold(wordleLetter, letter) {
+		return LetterPositionCorrect
+	} else {
+		// CASE 2: letter is in incorrect position
+		if strings.Contains(Wordle, letter) {
+			return LetterPositionInCorrect
+		}
+
+		// CASE 3: letter is not present in the word
+		return LetterPositionMissing
+	}
+}
+
 // handle incoming letter
 // if the current word is not complete, append the letter
 // and notify the ui that ui has to be updated
