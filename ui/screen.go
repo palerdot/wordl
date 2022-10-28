@@ -53,22 +53,9 @@ func drawBorder(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.S
 	}
 }
 
-// fill square with borders
-func fillSquare(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style) {
-	// we are going to repeatedly draw borders to the square
-	// moving along x axis and drawing Vertical borders
-	for col := 0; col <= sizeX; col++ {
-		for row := y1 + 1; row < y2; row++ {
-			s.SetContent(x1+col, row, tcell.RuneVLine, nil, boxStyle)
-			s.SetContent(x2-col, row, tcell.RuneVLine, nil, boxStyle)
-		}
-	}
-}
-
 func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle, text string) {
 	boxStyle := style.box
 	letterStyle := style.letter
-	hasBorder := style.hasBorder
 	// fix improper dimensions
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -82,10 +69,6 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle
 		for col := x1 + 1; col < x2; col++ {
 			s.SetContent(col, row, ' ', nil, boxStyle)
 		}
-	}
-
-	if hasBorder {
-		// drawBorder(s, x1, y1, x2, y2, boxStyle)
 	}
 
 	xDiff := sizeX / 2

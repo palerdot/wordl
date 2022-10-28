@@ -19,10 +19,8 @@ func Greet() {
 // Neutral/default position - transparent/black
 
 type PositionStyle struct {
-	box       tcell.Style
-	letter    tcell.Style
-	hasBorder bool
-	hasBG     bool
+	box    tcell.Style
+	letter tcell.Style
 }
 
 func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
@@ -36,10 +34,8 @@ func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
 			letterStyle := tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorWhite)
 
 			style := PositionStyle{
-				box:       boxStyle,
-				letter:    letterStyle,
-				hasBorder: false,
-				hasBG:     false,
+				box:    boxStyle,
+				letter: letterStyle,
 			}
 
 			return style
@@ -51,10 +47,8 @@ func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
 			letterStyle := tcell.StyleDefault.Background(tcell.Color236).Foreground(tcell.ColorWhite)
 
 			style := PositionStyle{
-				box:       boxStyle,
-				letter:    letterStyle,
-				hasBorder: false,
-				hasBG:     true,
+				box:    boxStyle,
+				letter: letterStyle,
 			}
 
 			return style
