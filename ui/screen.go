@@ -31,28 +31,6 @@ func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style,
 	}
 }
 
-// helper function to draw border
-func drawBorder(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, boxStyle tcell.Style) {
-	// draw borders
-	for col := x1 + 1; col < x2; col++ {
-		s.SetContent(col, y1, tcell.RuneHLine, nil, boxStyle)
-		s.SetContent(col, y2, tcell.RuneHLine, nil, boxStyle)
-	}
-
-	for row := y1 + 1; row < y2; row++ {
-		s.SetContent(x1, row, tcell.RuneVLine, nil, boxStyle)
-		s.SetContent(x2, row, tcell.RuneVLine, nil, boxStyle)
-	}
-
-	// draw rounded corners if necessary
-	if y1 != y2 && x1 != x2 {
-		s.SetContent(x1, y1, tcell.RuneULCorner, nil, boxStyle)
-		s.SetContent(x2, y1, tcell.RuneURCorner, nil, boxStyle)
-		s.SetContent(x1, y2, tcell.RuneLLCorner, nil, boxStyle)
-		s.SetContent(x2, y2, tcell.RuneLRCorner, nil, boxStyle)
-	}
-}
-
 func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle, text string) {
 	boxStyle := style.box
 	letterStyle := style.letter
@@ -181,7 +159,7 @@ func displayStatus(s tcell.Screen) {
 
 	infoStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
 	// display instructions
-	drawText(s, startX-3*sizeX, gridHeight+1, startX+totalWidth+3*sizeX, 55, infoStyle, "Esc/Ctrl-C: Quit. Ctrl-N: New Word. Type and enter the guess. Backspace to clear word.")
+	drawText(s, startX-3*sizeX, gridHeight+1, startX+totalWidth+3*sizeX, 55, infoStyle, "Esc/Ctrl-C to Quit. Ctrl-N for new Wordle. Type and enter the guess. Backspace to clear.")
 }
 
 func Render(s tcell.Screen) {
