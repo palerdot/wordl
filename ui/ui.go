@@ -8,7 +8,7 @@ import (
 )
 
 func Greet() {
-	fmt.Println("porumai ... all the best with Wordle!!!")
+	fmt.Println("Happy Wordle !!!")
 }
 
 // helper function to get letter styles
