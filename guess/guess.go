@@ -23,15 +23,34 @@ var IsOver bool = false
 // flag to decide if the user has correctly guessed
 var IsSuccess bool = false
 
+// valid wordle list
+var wordleList []string = getValidAnswerList()
+
+// valid guess list
+var validGuessList []string = getValidGuessList()
+
+// valid final list
+var ValidList []string = append(validGuessList, wordleList...)
+
+// tried guesses
+var Tries = [6]string{}
+
 // wordle for the game
 var Wordle string = getWordle()
 
-// valid guess list
-var ValidList []string = getValidGuessList()
-
-// tried guesses
-// var Tries = [6]string{"Hello", "Light", "Scout", "Aimer", "Foggy", "Clear"}
-var Tries = [6]string{}
+// helper function to reset wordle
+func ResetWordle() {
+	// active guess index
+	ActiveIndex = 0
+	// flag to indicate if word is guessed
+	IsOver = false
+	// flag to decide if the user has correctly guessed
+	IsSuccess = false
+	// tried guesses
+	Tries = [6]string{}
+	// wordle for the game
+	Wordle = getWordle()
+}
 
 func check(err error) {
 	if err != nil {
@@ -39,6 +58,7 @@ func check(err error) {
 	}
 }
 
+// valid guess list (does not include valid wordle list)
 func getValidGuessList() []string {
 	data, err := os.ReadFile("data/guess.txt")
 	check(err)
@@ -47,16 +67,19 @@ func getValidGuessList() []string {
 	return guessList
 }
 
-func getWordle() string {
-	rand.Seed(time.Now().UnixNano())
+// valid answer list
+func getValidAnswerList() []string {
 	data, err := os.ReadFile("data/answer.txt")
 	check(err)
 	var splitted = strings.Split(string(data), "\n")
-	var randomIndex = rand.Intn(len(splitted))
-	var word string = splitted[randomIndex]
 
-	// we are going to insert the valid answers as part of valid list
-	ValidList = append(ValidList, splitted...)
+	return splitted
+}
+
+func getWordle() string {
+	rand.Seed(time.Now().UnixNano())
+	var randomIndex = rand.Intn(len(wordleList))
+	var word string = wordleList[randomIndex]
 
 	return word
 }

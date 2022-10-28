@@ -178,6 +178,10 @@ func displayStatus(s tcell.Screen) {
 	}
 
 	drawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
+
+	infoStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
+	// display instructions
+	drawText(s, startX-3*sizeX, gridHeight+1, startX+totalWidth+3*sizeX, 55, infoStyle, "Esc/Ctrl-C: Quit. Ctrl-N: New Word. Type and enter the guess. Backspace to clear word.")
 }
 
 func Render(s tcell.Screen) {
@@ -223,8 +227,9 @@ func Listen(s tcell.Screen) {
 			if ev.Key() == tcell.KeyCtrlC || ev.Key() == tcell.KeyEsc {
 				s.Fini()
 				os.Exit(0)
-			} else if ev.Key() == tcell.KeyCtrlL {
-				s.Sync()
+			} else if ev.Key() == tcell.KeyCtrlN {
+				guess.ResetWordle()
+				Render(s)
 			} else {
 				// if game is over do not handle keys
 				if guess.IsOver {
