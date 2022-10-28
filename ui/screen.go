@@ -150,15 +150,34 @@ func populateGuess(s tcell.Screen) {
 }
 
 func displayStatus(s tcell.Screen) {
-	defaultStyle := tcell.StyleDefault.Background(tcell.ColorTeal).Foreground(tcell.ColorWhite)
+	var style tcell.Style
+	var status string
+	var padding int
+
 	xmax, _ := s.Size()
 	totalWidth := guess.WordLength * sizeX
 	gridHeight := guess.TotalTries*sizeY + 2
 	startX := (xmax - totalWidth) / 2
 
-	var status string = fmt.Sprintf("  Wordle: %s  ", guess.Wordle)
+	if guess.IsOver {
+		// CASE 1: game is over: user guessed right
+		if guess.IsSuccess {
+			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+			status = fmt.Sprintf("  Great! ")
+			padding = 2 * sizeX
+		} else {
+			// CASE 2: game is over: user didn't guess right
+			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+			status = fmt.Sprintf("  Wordle: %s ", strings.ToUpper(guess.Wordle))
+			padding = 1*sizeX + 2
+		}
+	} else {
+		style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
+		status = fmt.Sprintf("  %d/%d left ", (guess.TotalTries - guess.ActiveIndex), guess.TotalTries)
+		padding = 2*sizeX - 1
+	}
 
-	drawText(s, startX, gridHeight, startX+totalWidth, 55, defaultStyle, status)
+	drawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
 }
 
 func Render(s tcell.Screen) {
@@ -207,6 +226,11 @@ func Listen(s tcell.Screen) {
 			} else if ev.Key() == tcell.KeyCtrlL {
 				s.Sync()
 			} else {
+				// if game is over do not handle keys
+				if guess.IsOver {
+					break
+				}
+
 				mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
 				// handle enter key
 				if key == tcell.KeyEnter {

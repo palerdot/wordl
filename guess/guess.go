@@ -147,13 +147,20 @@ func Calculate() (err error) {
 		return nil
 	}
 
-	// 1b: word is valid guess but not wordle
+	// CASE 2: word is valid guess but not wordle
 	if isValidGuess(currentWord) {
 		// shift to next word
 		ActiveIndex = ActiveIndex + 1
 
+		// mark over if user has reached six tries
+		if ActiveIndex == TotalTries {
+			IsOver = true
+			IsSuccess = false
+		}
+
 		return nil
 	} else {
+		// CASE 3: word is not valid guess
 		// clear the current word
 		Tries[ActiveIndex] = ""
 
