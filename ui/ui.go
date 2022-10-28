@@ -28,10 +28,34 @@ func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
 
 	case guess.LetterPositionMissing:
 		{
-			// boxStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorRed)
-			// letterStyle := tcell.StyleDefault.Background(tcell.ColorGreen).Foreground(tcell.ColorWhite)
-			boxStyle := tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorBlue)
-			letterStyle := tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorWhite)
+			boxStyle := tcell.StyleDefault.Background(tcell.Color242).Foreground(tcell.Color242)
+			letterStyle := tcell.StyleDefault.Background(tcell.Color242).Foreground(tcell.ColorWhite)
+
+			style := PositionStyle{
+				box:    boxStyle,
+				letter: letterStyle,
+			}
+
+			return style
+		}
+
+	case guess.LetterPositionInCorrect:
+		{
+			boxStyle := tcell.StyleDefault.Background(tcell.Color179).Foreground(tcell.ColorWhite)
+			letterStyle := tcell.StyleDefault.Background(tcell.Color179).Foreground(tcell.ColorWhite)
+
+			style := PositionStyle{
+				box:    boxStyle,
+				letter: letterStyle,
+			}
+
+			return style
+		}
+
+	case guess.LetterPositionCorrect:
+		{
+			boxStyle := tcell.StyleDefault.Background(tcell.Color71).Foreground(tcell.ColorWhite)
+			letterStyle := tcell.StyleDefault.Background(tcell.Color71).Foreground(tcell.ColorWhite)
 
 			style := PositionStyle{
 				box:    boxStyle,

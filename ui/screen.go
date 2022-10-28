@@ -74,7 +74,7 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle
 	xDiff := sizeX / 2
 	yDiff := sizeY / 2
 
-	letterStyle.Bold(true)
+	letterStyle = letterStyle.Bold(true)
 	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, letterStyle, text)
 }
 
