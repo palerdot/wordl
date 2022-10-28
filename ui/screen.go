@@ -157,9 +157,14 @@ func displayStatus(s tcell.Screen) {
 
 	drawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
 
+	// shos instructions
 	infoStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
 	// display instructions
 	drawText(s, startX-3*sizeX, gridHeight+1, startX+totalWidth+3*sizeX, 55, infoStyle, "Esc/Ctrl-C to Quit. Ctrl-N for new Wordle. Type and enter the guess. Backspace to clear.")
+
+	// project url
+	urlStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorTeal)
+	drawText(s, startX+(sizeX/2), gridHeight+2, startX+totalWidth+(sizeX/2), 55, urlStyle, "https://github.com/palerdot/wordl")
 }
 
 func Render(s tcell.Screen) {
