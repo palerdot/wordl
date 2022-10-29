@@ -54,8 +54,8 @@ func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
 
 	case guess.LetterPositionCorrect:
 		{
-			boxStyle := tcell.StyleDefault.Background(tcell.Color34).Foreground(tcell.ColorWhite)
-			letterStyle := tcell.StyleDefault.Background(tcell.Color34).Foreground(tcell.ColorWhite)
+			boxStyle := tcell.StyleDefault.Background(tcell.Color28).Foreground(tcell.ColorWhite)
+			letterStyle := tcell.StyleDefault.Background(tcell.Color28).Foreground(tcell.ColorWhite)
 
 			style := PositionStyle{
 				box:    boxStyle,
