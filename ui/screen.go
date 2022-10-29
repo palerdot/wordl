@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/palerdot/wordl/guess"
@@ -54,6 +55,16 @@ func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style PositionStyle
 
 	letterStyle = letterStyle.Bold(true)
 	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, letterStyle, text)
+}
+
+// helper function to reset row
+func resetRow(s tcell.Screen, row int) {
+	// for now default blank style
+	style := GetLetterStyles(guess.LetterPositionBlank)
+
+	for col := 0; col < guess.WordLength; col++ {
+		drawGridLetter(s, row, col, style, "")
+	}
 }
 
 func InitScreen() tcell.Screen {
@@ -119,6 +130,21 @@ func populateGuess(s tcell.Screen) {
 		}
 
 		for col, r := range word {
+			var delay time.Duration
+
+			if col == 0 {
+				delay = 150
+			} else {
+				delay = 515
+			}
+
+			if row == guess.ActiveIndex-1 {
+				// paint the screen
+				s.Sync()
+				// fmt.Printf("%d %d Inactive index", row, guess.ActiveIndex)
+				time.Sleep(delay * time.Millisecond)
+			}
+
 			style := ColorLetter(col, string(r))
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
@@ -127,7 +153,7 @@ func populateGuess(s tcell.Screen) {
 	}
 }
 
-func displayStatus(s tcell.Screen) {
+func showGuessStatus(s tcell.Screen) {
 	var style tcell.Style
 	var status string
 	var padding int
@@ -156,6 +182,13 @@ func displayStatus(s tcell.Screen) {
 	}
 
 	drawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
+}
+
+func displayStatus(s tcell.Screen) {
+	xmax, _ := s.Size()
+	totalWidth := guess.WordLength * sizeX
+	gridHeight := guess.TotalTries*sizeY + 2
+	startX := (xmax - totalWidth) / 2
 
 	// shos instructions
 	infoStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
@@ -178,10 +211,12 @@ func Render(s tcell.Screen) {
 	drawBG(s)
 	// draw grid
 	drawGrid(s)
-	// populate guesses
-	populateGuess(s)
 	// display status
 	displayStatus(s)
+	// populate guesses
+	populateGuess(s)
+	// guess status
+	showGuessStatus(s)
 }
 
 func Listen(s tcell.Screen) {
@@ -223,9 +258,16 @@ func Listen(s tcell.Screen) {
 				// handle enter key
 				if key == tcell.KeyEnter {
 					err := guess.Calculate()
+
 					// if no error re-render
 					if err == nil {
 						Render(s)
+					} else {
+						// if invalid word clear the row
+						if err.Error() == "Invalid word" {
+							row := guess.ActiveIndex
+							resetRow(s, row)
+						}
 					}
 
 					break
