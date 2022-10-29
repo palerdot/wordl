@@ -36,8 +36,7 @@ var ValidList []string = append(validGuessList, wordleList...)
 var Tries = [6]string{}
 
 // wordle for the game
-// var Wordle string = getWordle()
-var Wordle string = "hello"
+var Wordle string = getWordle()
 
 // helper function to reset wordle
 func ResetWordle() {
@@ -156,9 +155,6 @@ func Calculate() (err error) {
 		return errors.New("word not yet full")
 	}
 
-	// shift to next word
-	ActiveIndex = ActiveIndex + 1
-
 	// we have a full word
 	// there are 2 cases;
 	// 1 - valid guess word (proceed to color the word)
@@ -167,6 +163,9 @@ func Calculate() (err error) {
 	// CASE 1: valid guess word
 	// 1a: word is the Wordle
 	if currentWord == Wordle {
+		// shift to next word
+		// this is needed for animating the correct guess
+		ActiveIndex = ActiveIndex + 1
 		// mark complete
 		IsOver = true
 		IsSuccess = true
@@ -176,6 +175,8 @@ func Calculate() (err error) {
 
 	// CASE 2: word is valid guess but not wordle
 	if isValidGuess(currentWord) {
+		// shift to next word
+		ActiveIndex = ActiveIndex + 1
 		// mark over if user has reached six tries
 		if ActiveIndex == TotalTries {
 			// mark game as over
