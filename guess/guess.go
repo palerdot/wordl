@@ -38,6 +38,15 @@ var Tries = [6]string{}
 // wordle for the game
 var Wordle string = getWordle()
 
+// grid dimensions
+// wordle letter dimension
+var LetterSizeX = 8
+var LetterSizeY = 4
+
+// keyboard hint dimensions
+var KbdSizeX = 4
+var KbdSizeY = 2
+
 // helper function to reset wordle
 func ResetWordle() {
 	// active guess index
