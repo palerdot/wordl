@@ -183,12 +183,12 @@ func Render(s tcell.Screen) {
 	drawGrid(s)
 	// display status
 	displayStatus(s)
+	// show keyboard
+	hint.DrawKeyboard(s)
 	// populate guesses
 	populateGuess(s)
 	// guess status
 	showGuessStatus(s)
-	// show keyboard
-	hint.DrawKeyboard(s)
 }
 
 func Listen(s tcell.Screen) {
