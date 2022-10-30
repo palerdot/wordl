@@ -103,7 +103,7 @@ const (
 	LetterPositionBlank LetterPosition = "blank"
 )
 
-// helper function to calculate color letter
+// helper function to calculate letter color
 // takes in index and letter
 // we will compare the letter at specified index of the wordle
 // returns LetterPosition

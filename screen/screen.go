@@ -9,6 +9,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/palerdot/wordl/guess"
+	"github.com/palerdot/wordl/hint"
 	"github.com/palerdot/wordl/ui"
 )
 
@@ -186,6 +187,8 @@ func Render(s tcell.Screen) {
 	populateGuess(s)
 	// guess status
 	showGuessStatus(s)
+	// show keyboard
+	hint.DrawKeyboard(s)
 }
 
 func Listen(s tcell.Screen) {

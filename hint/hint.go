@@ -1,4 +1,4 @@
-package ui
+package hint
 
 import (
 	"github.com/gdamore/tcell/v2"
@@ -14,7 +14,7 @@ var sizeX = 4
 var sizeY = 2
 
 // hint keyboard
-func drawKeyboard(s tcell.Screen) {
+func DrawKeyboard(s tcell.Screen) {
 	style := ui.GetLetterStyles(guess.LetterPositionBlank)
 
 	for row := 0; row < len(Rows); row++ {
@@ -32,11 +32,11 @@ func drawKeyboardLetter(s tcell.Screen, row int, col int, style ui.PositionStyle
 
 	space := 0
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength*size.X + ((guess.WordLength - 1) * space)
-	gridHeight := guess.TotalTries*size.Y + 2
+	totalWidth := guess.WordLength*guess.LetterSizeX + ((guess.WordLength - 1) * space)
+	gridHeight := guess.TotalTries * guess.LetterSizeY
 	// startX := 15
-	startX := (xmax - totalWidth) / 2
-	startY := gridHeight + 5
+	startX := row + (xmax-totalWidth)/2
+	startY := gridHeight + 9
 
 	x1 := startX + (col * size.X) + (space * col)
 	y1 := startY + (row * size.Y) + (space * row) - 4
