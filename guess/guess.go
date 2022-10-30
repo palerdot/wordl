@@ -43,10 +43,6 @@ var Wordle string = getWordle()
 var LetterSizeX = 8
 var LetterSizeY = 4
 
-// keyboard hint dimensions
-var KbdSizeX = 4
-var KbdSizeY = 2
-
 // helper function to reset wordle
 func ResetWordle() {
 	// active guess index

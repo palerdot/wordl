@@ -1,4 +1,4 @@
-package ui
+package screen
 
 import (
 	"fmt"
@@ -9,67 +9,19 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/palerdot/wordl/guess"
+	"github.com/palerdot/wordl/ui"
 )
-
-type dimension struct {
-	x int
-	y int
-}
-
-// ref: https://github.com/gdamore/tcell/blob/main/TUTORIAL.md
-func drawText(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, style tcell.Style, text string) {
-	row := y1
-	col := x1
-
-	for _, r := range []rune(text) {
-		s.SetContent(col, row, r, nil, style)
-		col++
-		if col >= x2 {
-			row++
-			col = x1
-		}
-		if row > y2 {
-			break
-		}
-	}
-}
-
-// generic function to draw box
-func drawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, size dimension, style PositionStyle, text string) {
-	boxStyle := style.box
-	letterStyle := style.letter
-	// fix improper dimensions
-	if y2 < y1 {
-		y1, y2 = y2, y1
-	}
-	if x2 < x1 {
-		x1, x2 = x2, x1
-	}
-
-	// fill background
-	for row := y1 + 1; row < y2; row++ {
-		for col := x1 + 1; col < x2; col++ {
-			s.SetContent(col, row, ' ', nil, boxStyle)
-		}
-	}
-
-	xDiff := size.x / 2
-	yDiff := size.y / 2
-
-	letterStyle = letterStyle.Bold(true)
-	drawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, letterStyle, text)
-}
 
 // helper function to reset row
 func resetRow(s tcell.Screen, row int) {
-	style := GetLetterStyles(guess.LetterPositionBlank)
+	style := ui.GetLetterStyles(guess.LetterPositionBlank)
 
 	for col := 0; col < guess.WordLength; col++ {
 		drawGridLetter(s, row, col, style, "")
 	}
 }
 
-func InitScreen() tcell.Screen {
+func Setup() tcell.Screen {
 	// init screen
 	s, err := tcell.NewScreen()
 	if err != nil {
@@ -95,7 +47,7 @@ func drawBG(s tcell.Screen) {
 
 // wordle grid
 func drawGrid(s tcell.Screen) {
-	style := GetLetterStyles(guess.LetterPositionBlank)
+	style := ui.GetLetterStyles(guess.LetterPositionBlank)
 
 	for row := 0; row < guess.TotalTries; row++ {
 		for col := 0; col < guess.WordLength; col++ {
@@ -105,25 +57,25 @@ func drawGrid(s tcell.Screen) {
 }
 
 // draws wordle letter
-func drawGridLetter(s tcell.Screen, row int, col int, style PositionStyle, letter string) {
-	size := dimension{
-		x: guess.LetterSizeX,
-		y: guess.LetterSizeY,
+func drawGridLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, letter string) {
+	size := ui.Dimension{
+		X: guess.LetterSizeX,
+		Y: guess.LetterSizeY,
 	}
 
 	space := 0
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength*size.x + ((guess.WordLength - 1) * space)
+	totalWidth := guess.WordLength*size.X + ((guess.WordLength - 1) * space)
 	// startX := 15
 	startX := (xmax - totalWidth) / 2
 	startY := 5
 
-	x1 := startX + (col * size.x) + (space * col)
-	y1 := startY + (row * size.y) + (space * row) - 4
-	x2 := x1 + size.x
-	y2 := y1 + size.y
+	x1 := startX + (col * size.X) + (space * col)
+	y1 := startY + (row * size.Y) + (space * row) - 4
+	x2 := x1 + size.X
+	y2 := y1 + size.Y
 
-	drawBox(s, x1, y1, x2, y2, size, style, letter)
+	ui.DrawBox(s, x1, y1, x2, y2, size, style, letter)
 }
 
 func populateGuess(s tcell.Screen) {
@@ -152,7 +104,7 @@ func populateGuess(s tcell.Screen) {
 				time.Sleep(delay * time.Millisecond)
 			}
 
-			style := ColorLetter(col, string(r))
+			style := ui.ColorLetter(col, string(r))
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
 
@@ -165,14 +117,14 @@ func showGuessStatus(s tcell.Screen) {
 	var status string
 	var padding int
 
-	size := dimension{
-		x: guess.LetterSizeX,
-		y: guess.LetterSizeY,
+	size := ui.Dimension{
+		X: guess.LetterSizeX,
+		Y: guess.LetterSizeY,
 	}
 
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength * size.x
-	gridHeight := guess.TotalTries*size.y + 2
+	totalWidth := guess.WordLength * size.X
+	gridHeight := guess.TotalTries*size.Y + 2
 	startX := (xmax - totalWidth) / 2
 
 	if guess.IsOver {
@@ -180,41 +132,41 @@ func showGuessStatus(s tcell.Screen) {
 		if guess.IsSuccess {
 			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 			status = fmt.Sprintf("  Great! ")
-			padding = 2 * size.x
+			padding = 2 * size.X
 		} else {
 			// CASE 2: game is over: user didn't guess right
 			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 			status = fmt.Sprintf("  Wordle: %s ", strings.ToUpper(guess.Wordle))
-			padding = 1*size.x + 4
+			padding = 1*size.X + 4
 		}
 	} else {
 		style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 		status = fmt.Sprintf("  %d/%d left ", (guess.TotalTries - guess.ActiveIndex), guess.TotalTries)
-		padding = 2*size.x - 1
+		padding = 2*size.X - 1
 	}
 
-	drawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
+	ui.DrawText(s, startX+padding, gridHeight, startX+totalWidth, 55, style, status)
 }
 
 func displayStatus(s tcell.Screen) {
-	size := dimension{
-		x: guess.LetterSizeX,
-		y: guess.LetterSizeY,
+	size := ui.Dimension{
+		X: guess.LetterSizeX,
+		Y: guess.LetterSizeY,
 	}
 
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength * size.x
-	gridHeight := guess.TotalTries*size.y + 2
+	totalWidth := guess.WordLength * size.X
+	gridHeight := guess.TotalTries*size.Y + 2
 	startX := (xmax - totalWidth) / 2
 
 	// shos instructions
 	infoStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.Color245)
 	// display instructions
-	drawText(s, startX-3*size.x, gridHeight+1, startX+totalWidth+3*size.x, 55, infoStyle, "Esc/Ctrl-C to Quit. Ctrl-N for new Wordle. Type and enter the guess. Backspace to clear.")
+	ui.DrawText(s, startX-3*size.X, gridHeight+1, startX+totalWidth+3*size.X, 55, infoStyle, "Esc/Ctrl-C to Quit. Ctrl-N for new Wordle. Type and enter the guess. Backspace to clear.")
 
 	// project url
 	urlStyle := tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorTeal)
-	drawText(s, startX+(size.x/2), gridHeight+2, startX+totalWidth+(size.x/2), 55, urlStyle, "https://github.com/palerdot/wordl")
+	ui.DrawText(s, startX+(size.X/2), gridHeight+2, startX+totalWidth+(size.X/2), 55, urlStyle, "https://github.com/palerdot/wordl")
 }
 
 func Render(s tcell.Screen) {
@@ -295,7 +247,7 @@ func Listen(s tcell.Screen) {
 					row, col, err := guess.ClearLetter()
 					// if no error clear the letter
 					if err == nil {
-						style := GetLetterStyles(guess.LetterPositionBlank)
+						style := ui.GetLetterStyles(guess.LetterPositionBlank)
 						drawGridLetter(s, row, col, style, " ")
 					}
 
@@ -309,7 +261,7 @@ func Listen(s tcell.Screen) {
 					// if no error populate letter
 					if err == nil {
 						// populate letter
-						style := GetLetterStyles(guess.LetterPositionBlank)
+						style := ui.GetLetterStyles(guess.LetterPositionBlank)
 						drawGridLetter(s, row, col, style, strings.ToUpper(string(ch)))
 					}
 				}

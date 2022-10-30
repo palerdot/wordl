@@ -2,14 +2,13 @@ package main
 
 import (
 	"github.com/gdamore/tcell/v2/encoding"
-	"github.com/palerdot/wordl/ui"
+	"github.com/palerdot/wordl/screen"
 )
 
 func main() {
 	encoding.Register()
-	ui.Greet()
 
-	s := ui.InitScreen()
+	s := screen.Setup()
 
 	// quit handler
 	quit := func() {
@@ -23,6 +22,6 @@ func main() {
 
 	defer quit()
 
-	ui.Render(s)
-	ui.Listen(s)
+	screen.Render(s)
+	screen.Listen(s)
 }
