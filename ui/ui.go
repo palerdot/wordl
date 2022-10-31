@@ -28,7 +28,7 @@ func drawBG(s tcell.Screen) {
 }
 
 // generic function to draw box
-func DrawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, size Dimension, style PositionStyle, text string) {
+func DrawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, size Dimension, style PositionStyle, text string, isBold bool) {
 	boxStyle := style.box
 	letterStyle := style.letter
 	// fix improper dimensions
@@ -49,7 +49,7 @@ func DrawBox(s tcell.Screen, x1 int, y1 int, x2 int, y2 int, size Dimension, sty
 	xDiff := size.X / 2
 	yDiff := size.Y / 2
 
-	letterStyle = letterStyle.Bold(true)
+	letterStyle = letterStyle.Bold(isBold)
 	DrawText(s, x1+xDiff, y1+yDiff, x2-xDiff, y2-yDiff, letterStyle, text)
 }
 

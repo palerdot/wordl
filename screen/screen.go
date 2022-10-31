@@ -76,7 +76,7 @@ func drawGridLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, le
 	x2 := x1 + size.X
 	y2 := y1 + size.Y
 
-	ui.DrawBox(s, x1, y1, x2, y2, size, style, letter)
+	ui.DrawBox(s, x1, y1, x2, y2, size, style, letter, true)
 }
 
 func populateGuess(s tcell.Screen) {
