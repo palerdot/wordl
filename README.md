@@ -2,13 +2,14 @@
   <img src="./logo.png" alt="Wordl - Web like Terminal Wordle">
 </p>
 
-`Terminal Wordle.`
-
-<img src="./wordl.gif" alt="Wordl - Web like Terminal Wordle">
+Terminal Wordle.
 
 **Wordl** aims to provide web like `Wordle` experience in the terminal, mainly
 - `Slow Reveal` letter colors after guessing.
 - Keyboard Hints
+
+<img src="./wordl.gif" alt="Wordl - Web like Terminal Wordle">
+
 
 ### Installation
 
