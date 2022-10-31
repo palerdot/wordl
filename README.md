@@ -8,5 +8,20 @@
 - `Slow Reveal` letter colors after guessing.
 - Keyboard Hints
 
+### Installation
+
+```
+go install github.com/palerdot/wordl
+```
+
+`Go` version `1.16`+ is required.
+
+You can also build from source if you have `Go` installed.
+
+```
+git clone https://github.com/palerdot/wordl
+go build .
+./wordl
+```
 
 
