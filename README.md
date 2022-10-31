@@ -11,7 +11,7 @@
 ### Installation
 
 ```
-go install github.com/palerdot/wordl
+go install github.com/palerdot/wordl@latest
 ```
 
 `Go` version `1.16`+ is required.
