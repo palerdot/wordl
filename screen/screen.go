@@ -172,6 +172,13 @@ func displayStatus(s tcell.Screen) {
 	ui.DrawText(s, startX+(size.X/2), gridHeight+2, startX+totalWidth+(size.X/2), 55, urlStyle, "https://github.com/palerdot/wordl")
 }
 
+func Reset() {
+	// reset wordle
+	guess.ResetWordle()
+	// reset hint data
+	hint.Reset()
+}
+
 func Render(s tcell.Screen) {
 	// default style
 	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
@@ -222,7 +229,7 @@ func Listen(s tcell.Screen) {
 				s.Fini()
 				os.Exit(0)
 			} else if ev.Key() == tcell.KeyCtrlN {
-				guess.ResetWordle()
+				Reset()
 				Render(s)
 			} else {
 				// if game is over do not handle keys

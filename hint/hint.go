@@ -26,16 +26,28 @@ type HintStatus struct {
 	Current  HintInfo
 }
 
-// hint status; contains info on keyboard letter hints
-var initialLetterStatus = HintInfo{
-	Correct:   make(map[string]bool),
-	Incorrect: make(map[string]bool),
-	Missing:   make(map[string]bool),
+var LetterStatus HintStatus = HintStatus{
+	Previous: setInitialStatus(),
+	Current:  setInitialStatus(),
 }
 
-var LetterStatus HintStatus = HintStatus{
-	Previous: initialLetterStatus,
-	Current:  initialLetterStatus,
+func setInitialStatus() HintInfo {
+	// hint status; contains info on keyboard letter hints
+	var initialLetterStatus = HintInfo{
+		Correct:   make(map[string]bool),
+		Incorrect: make(map[string]bool),
+		Missing:   make(map[string]bool),
+	}
+
+	return initialLetterStatus
+}
+
+// helper function to reset hint when new game is started
+func Reset() {
+	LetterStatus = HintStatus{
+		Previous: setInitialStatus(),
+		Current:  setInitialStatus(),
+	}
 }
 
 // hint keyboard
