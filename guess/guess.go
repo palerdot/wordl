@@ -36,7 +36,8 @@ var ValidList []string = append(validGuessList, wordleList...)
 var Tries = [6]string{}
 
 // wordle for the game
-var Wordle string = getWordle()
+// var Wordle string = getWordle()
+var Wordle string = "saint"
 
 // grid dimensions
 // wordle letter dimension
