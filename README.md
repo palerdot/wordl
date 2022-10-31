@@ -7,6 +7,7 @@
 This project aims to provide web like `Wordle` experience in the terminal.
 - Look and feel like Web UI
 - `Slow Reveal` letter colors after guessing.
+- Keyboard Hints
 
 
 
