@@ -105,10 +105,12 @@ func populateGuess(s tcell.Screen) {
 				time.Sleep(delay * time.Millisecond)
 			}
 
-			style := ui.ColorLetter(col, string(r))
+			style, pos := ui.ColorLetter(col, string(r))
+			// update hint status
+			hint.UpdateLetter(pos, string(r))
+			// draw grid letter
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
-
 		}
 	}
 }
@@ -183,12 +185,14 @@ func Render(s tcell.Screen) {
 	drawGrid(s)
 	// display status
 	displayStatus(s)
-	// show keyboard
-	hint.DrawKeyboard(s)
+	// show previous keyboard hint
+	hint.DrawKeyboard(s, false)
 	// populate guesses
 	populateGuess(s)
 	// guess status
 	showGuessStatus(s)
+	// show latest keyboard hint with data from latest guess
+	hint.DrawKeyboard(s, true)
 }
 
 func Listen(s tcell.Screen) {

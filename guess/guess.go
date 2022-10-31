@@ -115,6 +115,7 @@ func FindLetterPosition(index int, letter string) (pos LetterPosition) {
 	var wordleLetter string = string(Wordle[index])
 	// CASE 1: letter is in correct position
 	if strings.EqualFold(wordleLetter, letter) {
+		// update keyboard hint
 		return LetterPositionCorrect
 	} else {
 		// CASE 2: letter is in incorrect position
