@@ -1,4 +1,6 @@
-# wordl
+<p align="center">
+  <img src="./logo.png" alt="Wordl - Web like Terminal Wordle">
+</p>
 
 `Terminal Wordle.`
 
