@@ -2,7 +2,7 @@
   <img src="./logo.png" alt="Wordl - Web like Terminal Wordle">
 </p>
 
-Terminal Wordle.
+> Terminal Wordle.
 
 **WORDL** aims to provide web like `Wordle` experience in the terminal, mainly
 - `Slow Reveal` letter colors after guessing.
@@ -27,4 +27,7 @@ go build .
 ./wordl
 ```
 
+#### Wordle Words list
+
+Data for Wordle words is present in [`data`](./data) directory. The data was initially seeded from [here](https://gist.github.com/cfreshman/a7b776506c73284511034e63af1017ee) and [here](https://gist.github.com/cfreshman/d5fb56316158a1575898bba1eed3b5da). Right now, wordle words list is not synced. If you want any words to be added or removed, please submit a PR.
 
