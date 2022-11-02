@@ -27,7 +27,7 @@ go build .
 ./wordl
 ```
 
-Right now, `Go` needs to installed on the user machine for getting the binary. There are plans to provide binaries for different platforms, so that people without `Go` installed can try out **wordl.** Please refer this [issue](https://github.com/palerdot/wordl/issues/1) for more details.
+Right now, Go needs to be installed on the user's machine to get the binary executable. There are plans to provide binaries for different platforms, so that people without `Go` installed can try out **wordl.** Please refer this [issue](https://github.com/palerdot/wordl/issues/1) for more details.
 
 #### Wordle Words list
 
