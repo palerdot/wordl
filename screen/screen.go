@@ -180,10 +180,6 @@ func Reset() {
 }
 
 func Render(s tcell.Screen) {
-	// default style
-	defaultStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
-	// set default style
-	s.SetStyle(defaultStyle)
 	// clear the screen
 	s.Clear()
 	// draw bg
