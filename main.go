@@ -8,7 +8,7 @@ import (
 func main() {
 	encoding.Register()
 
-	s := screen.Setup()
+	s, state := screen.Setup()
 
 	// quit handler
 	quit := func() {
@@ -22,6 +22,6 @@ func main() {
 
 	defer quit()
 
-	screen.Render(s)
-	screen.Listen(s)
+	screen.Render(s, &state)
+	screen.Listen(s, &state)
 }

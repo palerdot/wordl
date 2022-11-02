@@ -8,13 +8,6 @@ import (
 	"github.com/palerdot/wordl/ui"
 )
 
-// keyboard rows
-var Rows [3]string = [3]string{"qwertyuiop", "asdfghjkl", "zxcvbnm"}
-
-// keyboard dimensions
-var sizeX = 4
-var sizeY = 2
-
 type HintInfo struct {
 	Correct   map[string]bool
 	Incorrect map[string]bool
@@ -26,9 +19,26 @@ type HintStatus struct {
 	Current  HintInfo
 }
 
-var LetterStatus HintStatus = HintStatus{
-	Previous: setInitialStatus(),
-	Current:  setInitialStatus(),
+// keyboard rows
+func getRows() [3]string {
+	var rows [3]string = [3]string{"qwertyuiop", "asdfghjkl", "zxcvbnm"}
+	return rows
+}
+
+// keyboard size
+func getSize() (x int, y int) {
+	x, y = 4, 2
+
+	return x, y
+}
+
+// get initial state
+func GetInitialState() HintStatus {
+	return HintStatus{
+		Previous: setInitialStatus(),
+		Current:  setInitialStatus(),
+	}
+
 }
 
 func setInitialStatus() HintInfo {
@@ -42,27 +52,21 @@ func setInitialStatus() HintInfo {
 	return initialLetterStatus
 }
 
-// helper function to reset hint when new game is started
-func Reset() {
-	LetterStatus = HintStatus{
-		Previous: setInitialStatus(),
-		Current:  setInitialStatus(),
-	}
-}
-
 // hint keyboard
 // shows previous hint (at the start of screen paint) or latest hint
-func DrawKeyboard(s tcell.Screen, isLatest bool) {
+func DrawKeyboard(s tcell.Screen, state *HintStatus, isLatest bool) {
 	var info HintInfo
+	var rows = getRows()
+
 	if isLatest {
-		info = LetterStatus.Current
+		info = state.Current
 	} else {
-		info = LetterStatus.Previous
+		info = state.Previous
 	}
 
-	for row := 0; row < len(Rows); row++ {
-		for col := 0; col < len(Rows[row]); col++ {
-			letter := string(Rows[row][col])
+	for row := 0; row < len(rows); row++ {
+		for col := 0; col < len(rows[row]); col++ {
+			letter := string(rows[row][col])
 			style := getLetterColor(info, letter)
 			drawKeyboardLetter(s, row, col, style, letter)
 		}
@@ -70,11 +74,12 @@ func DrawKeyboard(s tcell.Screen, isLatest bool) {
 
 	// if latest; copy latest info to previous for next guess
 	if isLatest {
-		LetterStatus.Previous = LetterStatus.Current
+		state.Previous = state.Current
 	}
 }
 
 func drawKeyboardLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, letter string) {
+	sizeX, sizeY := getSize()
 	var size = ui.Dimension{
 		X: sizeX,
 		Y: sizeY,
@@ -97,21 +102,21 @@ func drawKeyboardLetter(s tcell.Screen, row int, col int, style ui.PositionStyle
 }
 
 // update letter hint
-func UpdateLetter(pos guess.LetterPosition, l string) {
+func UpdateLetter(state *HintStatus, pos guess.LetterPosition, l string) {
 	letter := strings.ToLower(l)
 
 	if pos == guess.LetterPositionCorrect {
-		LetterStatus.Current.Correct[letter] = true
+		state.Current.Correct[letter] = true
 
 		return
 	}
 	if pos == guess.LetterPositionInCorrect {
-		LetterStatus.Current.Incorrect[letter] = true
+		state.Current.Incorrect[letter] = true
 
 		return
 	}
 	if pos == guess.LetterPositionMissing {
-		LetterStatus.Current.Missing[letter] = true
+		state.Current.Missing[letter] = true
 
 		return
 	}

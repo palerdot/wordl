@@ -13,6 +13,12 @@ import (
 	"github.com/palerdot/wordl/ui"
 )
 
+// game state
+type GameState struct {
+	guess int
+	hint  hint.HintStatus
+}
+
 // helper function to reset row
 func resetRow(s tcell.Screen, row int) {
 	style := ui.GetLetterStyles(guess.LetterPositionBlank)
@@ -22,7 +28,7 @@ func resetRow(s tcell.Screen, row int) {
 	}
 }
 
-func Setup() tcell.Screen {
+func Setup() (tcell.Screen, GameState) {
 	// init screen
 	s, err := tcell.NewScreen()
 	if err != nil {
@@ -32,7 +38,13 @@ func Setup() tcell.Screen {
 		log.Fatalf("%+v", err)
 	}
 
-	return s
+	// game state
+	state := GameState{
+		guess: 34,
+		hint:  hint.GetInitialState(),
+	}
+
+	return s, state
 }
 
 func drawBG(s tcell.Screen) {
@@ -79,7 +91,7 @@ func drawGridLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, le
 	ui.DrawBox(s, x1, y1, x2, y2, size, style, letter, true)
 }
 
-func populateGuess(s tcell.Screen) {
+func populateGuess(s tcell.Screen, state *GameState) {
 	for row, word := range guess.Tries {
 		if row >= guess.TotalTries {
 			break
@@ -107,7 +119,7 @@ func populateGuess(s tcell.Screen) {
 
 			style, pos := ui.ColorLetter(col, string(r))
 			// update hint status
-			hint.UpdateLetter(pos, string(r))
+			hint.UpdateLetter(&state.hint, pos, string(r))
 			// draw grid letter
 			letter := strings.ToUpper(string(r))
 			drawGridLetter(s, row, col, style, letter)
@@ -172,14 +184,14 @@ func displayStatus(s tcell.Screen) {
 	ui.DrawText(s, startX+(size.X/2), gridHeight+2, startX+totalWidth+(size.X/2), 55, urlStyle, "https://github.com/palerdot/wordl")
 }
 
-func Reset() {
+func Reset(state *GameState) {
 	// reset wordle
 	guess.ResetWordle()
 	// reset hint data
-	hint.Reset()
+	state.hint = hint.GetInitialState()
 }
 
-func Render(s tcell.Screen) {
+func Render(s tcell.Screen, state *GameState) {
 	// clear the screen
 	s.Clear()
 	// draw bg
@@ -189,16 +201,16 @@ func Render(s tcell.Screen) {
 	// display status
 	displayStatus(s)
 	// show previous keyboard hint
-	hint.DrawKeyboard(s, false)
+	hint.DrawKeyboard(s, &state.hint, false)
 	// populate guesses
-	populateGuess(s)
+	populateGuess(s, state)
 	// guess status
 	showGuessStatus(s)
 	// show latest keyboard hint with data from latest guess
-	hint.DrawKeyboard(s, true)
+	hint.DrawKeyboard(s, &state.hint, true)
 }
 
-func Listen(s tcell.Screen) {
+func Listen(s tcell.Screen, state *GameState) {
 	// Here's how to get the screen size when you need it.
 	// xmax, ymax := s.Size()
 
@@ -225,8 +237,8 @@ func Listen(s tcell.Screen) {
 				s.Fini()
 				os.Exit(0)
 			} else if ev.Key() == tcell.KeyCtrlN {
-				Reset()
-				Render(s)
+				Reset(state)
+				Render(s, state)
 			} else {
 				// if game is over do not handle keys
 				if guess.IsOver {
@@ -240,7 +252,7 @@ func Listen(s tcell.Screen) {
 
 					// if no error re-render
 					if err == nil {
-						Render(s)
+						Render(s, state)
 					} else {
 						// if invalid word clear the row
 						if err.Error() == "Invalid word" {
