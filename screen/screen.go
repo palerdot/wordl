@@ -15,7 +15,7 @@ import (
 
 // game state
 type GameState struct {
-	guess int
+	guess guess.GuessState
 	hint  hint.HintStatus
 }
 
@@ -23,7 +23,7 @@ type GameState struct {
 func resetRow(s tcell.Screen, row int) {
 	style := ui.GetLetterStyles(guess.LetterPositionBlank)
 
-	for col := 0; col < guess.WordLength; col++ {
+	for col := 0; col < guess.GetWordLength(); col++ {
 		drawGridLetter(s, row, col, style, "")
 	}
 }
@@ -40,7 +40,7 @@ func Setup() (tcell.Screen, GameState) {
 
 	// game state
 	state := GameState{
-		guess: 34,
+		guess: guess.GetInitialState(),
 		hint:  hint.GetInitialState(),
 	}
 
@@ -62,8 +62,8 @@ func drawBG(s tcell.Screen) {
 func drawGrid(s tcell.Screen) {
 	style := ui.GetLetterStyles(guess.LetterPositionBlank)
 
-	for row := 0; row < guess.TotalTries; row++ {
-		for col := 0; col < guess.WordLength; col++ {
+	for row := 0; row < guess.GetTotalTries(); row++ {
+		for col := 0; col < guess.GetWordLength(); col++ {
 			drawGridLetter(s, row, col, style, "")
 		}
 	}
@@ -71,14 +71,15 @@ func drawGrid(s tcell.Screen) {
 
 // draws wordle letter
 func drawGridLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, letter string) {
+	letterSizeX, letterSizeY := guess.GetSize()
 	size := ui.Dimension{
-		X: guess.LetterSizeX,
-		Y: guess.LetterSizeY,
+		X: letterSizeX,
+		Y: letterSizeY,
 	}
 
 	space := 0
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength*size.X + ((guess.WordLength - 1) * space)
+	totalWidth := guess.GetWordLength()*size.X + ((guess.GetWordLength() - 1) * space)
 	// startX := 15
 	startX := (xmax - totalWidth) / 2
 	startY := 5
@@ -92,12 +93,12 @@ func drawGridLetter(s tcell.Screen, row int, col int, style ui.PositionStyle, le
 }
 
 func populateGuess(s tcell.Screen, state *GameState) {
-	for row, word := range guess.Tries {
-		if row >= guess.TotalTries {
+	for row, word := range state.guess.Tries {
+		if row >= guess.GetTotalTries() {
 			break
 		}
 
-		if len(word) != guess.WordLength {
+		if len(word) != guess.GetWordLength() {
 			return
 		}
 
@@ -110,14 +111,14 @@ func populateGuess(s tcell.Screen, state *GameState) {
 				delay = 515
 			}
 
-			if row == guess.ActiveIndex-1 {
+			if row == state.guess.ActiveIndex-1 {
 				// paint the screen
 				s.Sync()
 				// fmt.Printf("%d %d Inactive index", row, guess.ActiveIndex)
 				time.Sleep(delay * time.Millisecond)
 			}
 
-			style, pos := ui.ColorLetter(col, string(r))
+			style, pos := ui.ColorLetter(state.guess.Wordle, col, string(r))
 			// update hint status
 			hint.UpdateLetter(&state.hint, pos, string(r))
 			// draw grid letter
@@ -127,36 +128,37 @@ func populateGuess(s tcell.Screen, state *GameState) {
 	}
 }
 
-func showGuessStatus(s tcell.Screen) {
+func showGuessStatus(s tcell.Screen, guessState *guess.GuessState) {
 	var style tcell.Style
 	var status string
 	var padding int
 
+	letterSizeX, letterSizeY := guess.GetSize()
 	size := ui.Dimension{
-		X: guess.LetterSizeX,
-		Y: guess.LetterSizeY,
+		X: letterSizeX,
+		Y: letterSizeY,
 	}
 
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength * size.X
-	gridHeight := guess.TotalTries*size.Y + 2
+	totalWidth := guess.GetWordLength() * size.X
+	gridHeight := guess.GetTotalTries()*size.Y + 2
 	startX := (xmax - totalWidth) / 2
 
-	if guess.IsOver {
+	if guessState.IsOver {
 		// CASE 1: game is over: user guessed right
-		if guess.IsSuccess {
+		if guessState.IsSuccess {
 			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
 			status = fmt.Sprintf("  Great! ")
 			padding = 2 * size.X
 		} else {
 			// CASE 2: game is over: user didn't guess right
 			style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
-			status = fmt.Sprintf("  Wordle: %s ", strings.ToUpper(guess.Wordle))
+			status = fmt.Sprintf("  Wordle: %s ", strings.ToUpper(guessState.Wordle))
 			padding = 1*size.X + 4
 		}
 	} else {
 		style = tcell.StyleDefault.Background(tcell.Color234).Foreground(tcell.ColorWhite)
-		status = fmt.Sprintf("  %d/%d left ", (guess.TotalTries - guess.ActiveIndex), guess.TotalTries)
+		status = fmt.Sprintf("  %d/%d left ", (guess.GetTotalTries() - guessState.ActiveIndex), guess.GetTotalTries())
 		padding = 2*size.X - 1
 	}
 
@@ -164,14 +166,15 @@ func showGuessStatus(s tcell.Screen) {
 }
 
 func displayStatus(s tcell.Screen) {
+	letterSizeX, letterSizeY := guess.GetSize()
 	size := ui.Dimension{
-		X: guess.LetterSizeX,
-		Y: guess.LetterSizeY,
+		X: letterSizeX,
+		Y: letterSizeY,
 	}
 
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength * size.X
-	gridHeight := guess.TotalTries*size.Y + 2
+	totalWidth := guess.GetWordLength() * size.X
+	gridHeight := guess.GetTotalTries()*size.Y + 2
 	startX := (xmax - totalWidth) / 2
 
 	// shos instructions
@@ -186,7 +189,8 @@ func displayStatus(s tcell.Screen) {
 
 func Reset(state *GameState) {
 	// reset wordle
-	guess.ResetWordle()
+	// guess.ResetWordle()
+	state.guess = guess.GetInitialState()
 	// reset hint data
 	state.hint = hint.GetInitialState()
 }
@@ -205,7 +209,7 @@ func Render(s tcell.Screen, state *GameState) {
 	// populate guesses
 	populateGuess(s, state)
 	// guess status
-	showGuessStatus(s)
+	showGuessStatus(s, &state.guess)
 	// show latest keyboard hint with data from latest guess
 	hint.DrawKeyboard(s, &state.hint, true)
 }
@@ -241,14 +245,14 @@ func Listen(s tcell.Screen, state *GameState) {
 				Render(s, state)
 			} else {
 				// if game is over do not handle keys
-				if guess.IsOver {
+				if state.guess.IsOver {
 					break
 				}
 
 				mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
 				// handle enter key
 				if key == tcell.KeyEnter {
-					err := guess.Calculate()
+					err := guess.Calculate(&state.guess)
 
 					// if no error re-render
 					if err == nil {
@@ -256,7 +260,7 @@ func Listen(s tcell.Screen, state *GameState) {
 					} else {
 						// if invalid word clear the row
 						if err.Error() == "Invalid word" {
-							row := guess.ActiveIndex
+							row := state.guess.ActiveIndex
 							resetRow(s, row)
 						}
 					}
@@ -266,7 +270,7 @@ func Listen(s tcell.Screen, state *GameState) {
 
 				// backspace/delete
 				if key == tcell.KeyDelete || key == tcell.KeyBackspace || key == 127 {
-					row, col, err := guess.ClearLetter()
+					row, col, err := guess.ClearLetter(&state.guess)
 					// if no error clear the letter
 					if err == nil {
 						style := ui.GetLetterStyles(guess.LetterPositionBlank)
@@ -279,7 +283,7 @@ func Listen(s tcell.Screen, state *GameState) {
 				// 65 - 122; valid letters range
 				if mod == 0 && ch >= 65 && ch <= 122 {
 					// we have a valid character
-					row, col, err := guess.HandleLetter(ch)
+					row, col, err := guess.HandleLetter(ch, &state.guess)
 					// if no error populate letter
 					if err == nil {
 						// populate letter

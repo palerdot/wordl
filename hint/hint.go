@@ -85,10 +85,12 @@ func drawKeyboardLetter(s tcell.Screen, row int, col int, style ui.PositionStyle
 		Y: sizeY,
 	}
 
+	letterSizeX, letterSizeY := guess.GetSize()
+
 	space := 0
 	xmax, _ := s.Size()
-	totalWidth := guess.WordLength*guess.LetterSizeX + ((guess.WordLength - 1) * space)
-	gridHeight := guess.TotalTries * guess.LetterSizeY
+	totalWidth := guess.GetWordLength()*letterSizeX + ((guess.GetWordLength() - 1) * space)
+	gridHeight := guess.GetTotalTries() * letterSizeY
 	// startX := 15
 	startX := row*2 + (xmax-totalWidth)/2
 	startY := gridHeight + 10

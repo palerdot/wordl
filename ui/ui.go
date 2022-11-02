@@ -141,8 +141,8 @@ func GetLetterStyles(posType guess.LetterPosition) PositionStyle {
 }
 
 // color letter
-func ColorLetter(index int, letter string) (PositionStyle, guess.LetterPosition) {
-	var pos = guess.FindLetterPosition(index, letter)
+func ColorLetter(wordle string, col int, letter string) (PositionStyle, guess.LetterPosition) {
+	var pos = guess.FindLetterPosition(wordle, col, letter)
 
 	return GetLetterStyles(pos), pos
 }
