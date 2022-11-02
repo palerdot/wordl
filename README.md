@@ -27,6 +27,8 @@ go build .
 ./wordl
 ```
 
+Right now, `Go` needs to installed on the user machine for getting the binary. There are plans to provide binaries for different platforms, so that people without `Go` installed can try out **wordl.** Please refer this [issue](https://github.com/palerdot/wordl/issues/1) for more details.
+
 #### Wordle Words list
 
 Data for Wordle words is present in [`data`](./data) directory. The data was initially seeded from [here](https://gist.github.com/cfreshman/a7b776506c73284511034e63af1017ee) and [here](https://gist.github.com/cfreshman/d5fb56316158a1575898bba1eed3b5da). Right now, wordle words list is not synced. If you want any words to be added or removed, please submit a PR.
