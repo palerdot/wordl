@@ -8,6 +8,33 @@ import (
 	"time"
 )
 
+// Wordle Data
+// loaded once during the lifetime of the game
+
+// valid wordle list
+var wordleList []string = getValidAnswerList()
+
+// valid guess list
+var validGuessList []string = getValidGuessList()
+
+// valid guess list (does not include valid wordle list)
+func getValidGuessList() []string {
+	data, err := os.ReadFile("data/guess.txt")
+	check(err)
+	var guessList = strings.Split(string(data), "\n")
+
+	return guessList
+}
+
+// valid answer list
+func getValidAnswerList() []string {
+	data, err := os.ReadFile("data/answer.txt")
+	check(err)
+	var splitted = strings.Split(string(data), "\n")
+
+	return splitted
+}
+
 // guess word length
 func GetWordLength() int {
 	return 5
@@ -44,11 +71,6 @@ type GuessState struct {
 
 // initial guess state
 func GetInitialState() GuessState {
-	// valid wordle list
-	var wordleList []string = getValidAnswerList()
-	// valid guess list
-	var validGuessList []string = getValidGuessList()
-
 	return GuessState{
 		ActiveIndex: 0,
 		IsOver:      false,
@@ -65,28 +87,8 @@ func check(err error) {
 	}
 }
 
-// valid guess list (does not include valid wordle list)
-func getValidGuessList() []string {
-	data, err := os.ReadFile("data/guess.txt")
-	check(err)
-	var guessList = strings.Split(string(data), "\n")
-
-	return guessList
-}
-
-// valid answer list
-func getValidAnswerList() []string {
-	data, err := os.ReadFile("data/answer.txt")
-	check(err)
-	var splitted = strings.Split(string(data), "\n")
-
-	return splitted
-}
-
 func getWordle() string {
 	rand.Seed(time.Now().UnixNano())
-	// valid wordle list
-	var wordleList []string = getValidAnswerList()
 	var randomIndex = rand.Intn(len(wordleList))
 	var word string = wordleList[randomIndex]
 
