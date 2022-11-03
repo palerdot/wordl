@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 // ----------------------------------------------
 // START: Wordle Data
 // loaded once during the lifetime of the game
@@ -85,12 +91,6 @@ func GetInitialState() GuessState {
 		ValidList:   validWordleList,
 		Tries:       [6]string{},
 		Wordle:      getWordle(),
-	}
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
 	}
 }
 
