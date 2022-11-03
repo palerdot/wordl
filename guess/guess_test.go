@@ -35,7 +35,7 @@ func TestWordLength(t *testing.T) {
 }
 
 func TestTotalTries(t *testing.T) {
-	if GetWordLength() != 6 {
+	if GetTotalTries() != 6 {
 		t.Error("invalid total guess tries")
 	}
 }
