@@ -27,3 +27,28 @@ func TestGetSize(t *testing.T) {
 		t.Error("invalid wordle grid size")
 	}
 }
+
+func TestWordLength(t *testing.T) {
+	if GetWordLength() != 5 {
+		t.Error("invalid word length")
+	}
+}
+
+func TestTotalTries(t *testing.T) {
+	if GetWordLength() != 6 {
+		t.Error("invalid total guess tries")
+	}
+}
+
+func Test_isValidGuess(t *testing.T) {
+	var validGuess = "pious"
+	var invalidGuess = "aeiou"
+
+	if isValidGuess(state.ValidList, validGuess) != true {
+		t.Errorf("%s should be a valid guess", validGuess)
+	}
+
+	if isValidGuess(state.ValidList, invalidGuess) != false {
+		t.Errorf("%s should be a invalid guess", invalidGuess)
+	}
+}
