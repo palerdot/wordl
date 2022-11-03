@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-// Wordle Data
+// ----------------------------------------------
+// START: Wordle Data
 // loaded once during the lifetime of the game
 
 // valid wordle list
@@ -16,6 +17,9 @@ var wordleList []string = getValidAnswerList()
 
 // valid guess list
 var validGuessList []string = getValidGuessList()
+
+// valid list of guesses + answers
+var validWordleList []string = append(validGuessList, wordleList...)
 
 // valid guess list (does not include valid wordle list)
 func getValidGuessList() []string {
@@ -34,6 +38,9 @@ func getValidAnswerList() []string {
 
 	return splitted
 }
+
+// END: Wordle Data
+// ----------------------------------------------
 
 // guess word length
 func GetWordLength() int {
@@ -75,7 +82,7 @@ func GetInitialState() GuessState {
 		ActiveIndex: 0,
 		IsOver:      false,
 		IsSuccess:   false,
-		ValidList:   append(validGuessList, wordleList...),
+		ValidList:   validWordleList,
 		Tries:       [6]string{},
 		Wordle:      getWordle(),
 	}
