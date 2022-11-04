@@ -114,7 +114,6 @@ func populateGuess(s tcell.Screen, state *GameState) {
 			if row == state.guess.ActiveIndex-1 {
 				// paint the screen
 				s.Sync()
-				// fmt.Printf("%d %d Inactive index", row, guess.ActiveIndex)
 				time.Sleep(delay * time.Millisecond)
 			}
 
