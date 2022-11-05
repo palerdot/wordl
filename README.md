@@ -17,7 +17,7 @@
 go install github.com/palerdot/wordl@latest
 ```
 
-`Go` version `1.16`+ is required.
+`Go` version `1.16`+ is required. Please note, if you are installing specific version/tags, install tag/version that is `>= v1.1.0`.
 
 You can also build from source if you have `Go` installed.
 
