@@ -1,12 +1,22 @@
 package guess
 
 import (
+	"embed"
 	"errors"
 	"math/rand"
-	"os"
 	"strings"
 	"time"
 )
+
+// https://pkg.go.dev/embed
+// using embed to deal with relative path complexities when reading the file
+// caveat is we can embed files at or below the current path
+
+//go:embed data/guess.txt
+var guessContent embed.FS
+
+//go:embed data/answer.txt
+var answerContent embed.FS
 
 func check(err error) {
 	if err != nil {
@@ -29,7 +39,7 @@ var validWordleList []string = append(validGuessList, wordleList...)
 
 // valid guess list (does not include valid wordle list)
 func getValidGuessList() []string {
-	data, err := os.ReadFile("data/guess.txt")
+	data, err := guessContent.ReadFile("data/guess.txt")
 	check(err)
 	var guessList = strings.Split(string(data), "\n")
 
@@ -38,7 +48,7 @@ func getValidGuessList() []string {
 
 // valid answer list
 func getValidAnswerList() []string {
-	data, err := os.ReadFile("data/answer.txt")
+	data, err := answerContent.ReadFile("data/answer.txt")
 	check(err)
 	var splitted = strings.Split(string(data), "\n")
 

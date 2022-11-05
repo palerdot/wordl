@@ -2,7 +2,6 @@ package guess
 
 import (
 	"fmt"
-	_ "github.com/palerdot/wordl/testing_init"
 	"os"
 	"testing"
 )
