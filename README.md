@@ -31,5 +31,5 @@ Right now, Go needs to be installed on the user's machine to get the binary exec
 
 #### Wordle Words list
 
-Data for Wordle words is present in [`guess/data`](.guess/data) directory. The data was initially seeded from [here](https://gist.github.com/cfreshman/a7b776506c73284511034e63af1017ee) and [here](https://gist.github.com/cfreshman/d5fb56316158a1575898bba1eed3b5da). Right now, wordle words list is not synced. If you want any words to be added or removed, please submit a PR.
+Data for Wordle words is present in [`guess/data`](./guess/data) directory. The data was initially seeded from [here](https://gist.github.com/cfreshman/a7b776506c73284511034e63af1017ee) and [here](https://gist.github.com/cfreshman/d5fb56316158a1575898bba1eed3b5da). Right now, wordle words list is not synced. If you want any words to be added or removed, please submit a PR.
 
