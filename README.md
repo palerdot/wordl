@@ -13,11 +13,15 @@
 
 ### Installation
 
+Binaries are available for different platforms from latest release page - https://github.com/palerdot/wordl/releases/latest
+
+If you have `Go` installed, you can choose to install via one of the methods below.
+
 ```
 go install github.com/palerdot/wordl@latest
 ```
 
-`Go` version `1.16`+ is required. Please note, if you are installing specific version/tags, install tag/version that is `>= v1.1.0`.
+`Go` version `1.16`+ is required. 
 
 You can also build from source if you have `Go` installed.
 
@@ -26,8 +30,6 @@ git clone https://github.com/palerdot/wordl
 go build .
 ./wordl
 ```
-
-Right now, Go needs to be installed on the user's machine to get the binary executable. There are plans to provide binaries for different platforms, so that people without `Go` installed can try out **wordl.** Please refer this [issue](https://github.com/palerdot/wordl/issues/1) for more details.
 
 #### Wordle Words list
 
